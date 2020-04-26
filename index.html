@@ -144,9 +144,6 @@
             marker.setMap(null);
           });
           markers = [];
-
-		  //ADDED CODE
-		  var addresses = [];
 		  
           // For each place, get the icon, name and location.
           var bounds = new google.maps.LatLngBounds();
@@ -155,35 +152,13 @@
               console.log("Returned place contains no geometry");
               return;
             }
-            var icon = {
-              url: place.icon,
-              size: new google.maps.Size(71, 71),
-              origin: new google.maps.Point(0, 0),
-              anchor: new google.maps.Point(17, 34),
-              scaledSize: new google.maps.Size(25, 25)
-            };
-
-            // Create a marker for each place.
-            markers.push(new google.maps.Marker({
-              map: map,
-              icon: icon,
-              title: place.name,
-              position: place.geometry.location
-            }));
-
-            if (place.geometry.viewport) {
-              // Only geocodes have viewport.
-              bounds.union(place.geometry.viewport);
-            } else {
-              bounds.extend(place.geometry.location);
-            }
 			
 			// -- ADDED CODE -- //
-
+			var iconColor;
+			
+			var addresses = [];
+			  
 			addresses.push(place.formatted_address);
-          });
-		  
-          map.fitBounds(bounds);
 			
 			addresses.forEach(function(address) {
 				// indices of 2nd and 3rd commas in the string
@@ -202,20 +177,126 @@
 						index3 = i;
 					}
 				}
-				var stateZip = address.substring(index2 + 2, index3);
-				
-				var zipCode = stateZip.substring(4);
+				var stateZip = address.substring(index2 + 3, index3+1);
+				console.log(stateZip);
+				var zipCode = stateZip.substring(3,8);
+				console.log(zipCode);
 				zipCodes.push(zipCode);
 			});
 			console.log(zipCodes);
+			
+			function reqListener() {
+				var data = JSON.parse(this.responseText);
+				console.log(data);
+				console.log(data.cases);
+			    if(parseInt(data.cases,16) > 500){
+				  iconColor = "http://labs.google.com/ridefinder/images/mm_20_red.png"
+					
+				}
+				else if(parseInt(data.cases,16) > 100) {
+					iconColor = "http://labs.google.com/ridefinder/images/mm_20_orange.png"
+				}
+				else {
+					iconColor = "http://labs.google.com/ridefinder/images/mm_20_yellow.png"
+					
+				}
+			}
+			function reqError(err) {
+				console.log('Fetch Error :-S', err);
+			}
+		
+			zipCodes.forEach(function(zipCode){
+				var oReq = new XMLHttpRequest();
+				oReq.onload = reqListener;
+				oReq.onerror = reqError;
+				oReq.open('get', 'https://covid-hotline-bling.herokuapp.com/zipcode/' + zipCode, true);
+				oReq.send();
+			});
+			
+			// --END ADDED CODE--//
+            var icon = {
+              url: {url: iconColor},
+              size: new google.maps.Size(71, 71),
+              origin: new google.maps.Point(0, 0),
+              anchor: new google.maps.Point(17, 34),
+              scaledSize: new google.maps.Size(25, 25)
+            };
+
+            // Create a marker for each place.
+            markers.push(new google.maps.Marker({
+              map: map,
+              icon: {
+				url: iconColor
+				},
+              title: place.name,
+              position: place.geometry.location
+            }));
+
+            if (place.geometry.viewport) {
+              // Only geocodes have viewport.
+              bounds.union(place.geometry.viewport);
+            } else {
+              bounds.extend(place.geometry.location);
+            }
+			
+			// -- ADDED CODE -- //
+
+			
+          });
+		  
+          map.fitBounds(bounds);
+		  
+			
+			
+		
+		
 		});
 		
 		
 		}
 		
-		
 
     </script>
+	
+	<script>
+	
+		/*
+		//{fips: "53061", cases: 2267, deaths: 102, recentdate: "2020-04-24"}
+		function reqListener() {
+		  var data = JSON.parse(this.responseText);
+		  
+		  if(data["cases"] > 500){
+			  iconColor = {
+				url: "http://labs.google.com/ridefinder/images/mm_20_red.png"
+				}
+			}
+			else if(data["cases"] > 100) {
+				iconColor = {
+					url: "http://labs.google.com/ridefinder/images/mm_20_orange.png"
+				}
+			}
+			else {
+				iconColor = {
+					url: "http://labs.google.com/ridefinder/images/mm_20_yellow.png"
+				}
+			}
+			
+		  console.log(data);
+		  console.log("hey!");
+		}
+		function reqError(err) {
+		  console.log('Fetch Error :-S', err);
+		}
+		//if(zipCodes.length){
+			//zipCodes.forEach(function(zipCode){
+				var oReq = new XMLHttpRequest();
+				oReq.onload = reqListener;
+				oReq.onerror = reqError;
+				oReq.open('get', 'https://covid-hotline-bling.herokuapp.com/zipcode/' + zipCode, true);
+				oReq.send();
+			//});
+		//}*/
+	</script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCkCjjA9_JXX291x8AndON9L2LIK41_ME8&libraries=places&callback=initAutocomplete" async defer></script>
   </body>
 
