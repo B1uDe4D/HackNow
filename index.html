@@ -154,13 +154,13 @@
             }
 			
 			// -- ADDED CODE -- //
-			var iconColor;
+			var iconColor = "http://labs.google.com/ridefinder/images/mm_20_orange.png";
 			
-			var addresses = [];
+			//var addresses = [];
 			  
-			addresses.push(place.formatted_address);
-			
-			addresses.forEach(function(address) {
+			//addresses.push(place.formatted_address);
+			var address = place.formatted_address;
+			//addresses.forEach(function(address) {
 				// indices of 2nd and 3rd commas in the string
 				var index2 = 0;
 				var index3 = 0;
@@ -178,59 +178,63 @@
 					}
 				}
 				var stateZip = address.substring(index2 + 3, index3+1);
-				console.log(stateZip);
+				//console.log(stateZip);
 				var zipCode = stateZip.substring(3,8);
-				console.log(zipCode);
-				zipCodes.push(zipCode);
-			});
-			console.log(zipCodes);
+				//console.log(zipCode);
+				//zipCodes.push(zipCode);
+			//});
+			//console.log(zipCodes);
 			
 			function reqListener() {
 				var data = JSON.parse(this.responseText);
 				console.log(data);
 				console.log(data.cases);
 			    if(parseInt(data.cases,16) > 500){
+					console.log("red");
 				  iconColor = "http://labs.google.com/ridefinder/images/mm_20_red.png"
 					
 				}
 				else if(parseInt(data.cases,16) > 100) {
+					console.log("orange");
 					iconColor = "http://labs.google.com/ridefinder/images/mm_20_orange.png"
 				}
 				else {
+				console.log("yellow");
 					iconColor = "http://labs.google.com/ridefinder/images/mm_20_yellow.png"
 					
 				}
+				
+				var icon = {
+				  url: iconColor,
+				  size: new google.maps.Size(71, 71),
+				  origin: new google.maps.Point(0, 0),
+				  anchor: new google.maps.Point(17, 34),
+				  scaledSize: new google.maps.Size(25, 25)
+				};
+				// Create a marker for each place.
+				markers.push(new google.maps.Marker({
+				  map: map,
+				  icon: icon,
+				  title: place.name,
+				  position: place.geometry.location
+				}));
 			}
 			function reqError(err) {
 				console.log('Fetch Error :-S', err);
 			}
 		
-			zipCodes.forEach(function(zipCode){
+			//zipCodes.forEach(function(zipCode){
 				var oReq = new XMLHttpRequest();
 				oReq.onload = reqListener;
 				oReq.onerror = reqError;
 				oReq.open('get', 'https://covid-hotline-bling.herokuapp.com/zipcode/' + zipCode, true);
 				oReq.send();
-			});
+			//});
 			
 			// --END ADDED CODE--//
-            var icon = {
-              url: {url: iconColor},
-              size: new google.maps.Size(71, 71),
-              origin: new google.maps.Point(0, 0),
-              anchor: new google.maps.Point(17, 34),
-              scaledSize: new google.maps.Size(25, 25)
-            };
+            
 
-            // Create a marker for each place.
-            markers.push(new google.maps.Marker({
-              map: map,
-              icon: {
-				url: iconColor
-				},
-              title: place.name,
-              position: place.geometry.location
-            }));
+            // *original markers place
 
             if (place.geometry.viewport) {
               // Only geocodes have viewport.
