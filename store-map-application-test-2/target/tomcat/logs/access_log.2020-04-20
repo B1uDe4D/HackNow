@@ -1,0 +1,4 @@
+0:0:0:0:0:0:0:1 - - [20/Apr/2020:21:14:25 -0700] "GET /spring-mvc/login HTTP/1.1" 200 11 http-bio-8080-exec-2 88
+0:0:0:0:0:0:0:1 - - [20/Apr/2020:21:16:01 -0700] "GET /spring-mvc/login5 HTTP/1.1" 404 949 http-bio-8080-exec-4 22
+0:0:0:0:0:0:0:1 - - [20/Apr/2020:21:27:21 -0700] "GET /spring-mvc/login HTTP/1.1" 500 2980 http-bio-8080-exec-7 56
+0:0:0:0:0:0:0:1 - - [20/Apr/2020:21:28:44 -0700] "GET /spring-mvc/login HTTP/1.1" 200 391 http-bio-8080-exec-1 262
