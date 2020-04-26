@@ -106,6 +106,8 @@
       // This example requires the Places library. Include the libraries=places
       // parameter when you first load the API. For example:
       // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
+	  
+	  var zipCodes = [];
 
       function initAutocomplete() {
         var map = new google.maps.Map(document.getElementById('map'), {
@@ -143,6 +145,9 @@
           });
           markers = [];
 
+		  //ADDED CODE
+		  var addresses = [];
+		  
           // For each place, get the icon, name and location.
           var bounds = new google.maps.LatLngBounds();
           places.forEach(function(place) {
@@ -172,10 +177,43 @@
             } else {
               bounds.extend(place.geometry.location);
             }
+			
+			// -- ADDED CODE -- //
+
+			addresses.push(place.formatted_address);
           });
+		  
           map.fitBounds(bounds);
-        });
-      }
+			
+			addresses.forEach(function(address) {
+				// indices of 2nd and 3rd commas in the string
+				var index2 = 0;
+				var index3 = 0;
+				var commas = 1;
+				for(let i = 0; i < address.length; i++) {
+					if(address[i] == ',') {
+						commas++;
+						console.log();
+					}
+					if(commas == 2) {
+						index2 = i;
+					}
+					if(commas == 3) {
+						index3 = i;
+					}
+				}
+				var stateZip = address.substring(index2 + 2, index3);
+				
+				var zipCode = stateZip.substring(4);
+				zipCodes.push(zipCode);
+			});
+			console.log(zipCodes);
+		});
+		
+		
+		}
+		
+		
 
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCkCjjA9_JXX291x8AndON9L2LIK41_ME8&libraries=places&callback=initAutocomplete" async defer></script>
